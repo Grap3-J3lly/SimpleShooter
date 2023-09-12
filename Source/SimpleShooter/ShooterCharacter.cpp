@@ -2,6 +2,12 @@
 
 
 #include "ShooterCharacter.h"
+#include "Gun.h"
+
+
+// - - - - - - - - - - - - - - - - - - - - - -
+//			PUBLIC FUNCTIONS
+// - - - - - - - - - - - - - - - - - - - - - -
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -9,13 +15,6 @@ AShooterCharacter::AShooterCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-}
-
-// Called when the game starts or when spawned
-void AShooterCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -38,7 +37,46 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis(TEXT("LookRightRate"), this, &AShooterCharacter::LookRightRate);
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction(TEXT("Shoot"), EInputEvent::IE_Pressed, this, &AShooterCharacter::Shoot);
 }
+
+float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageToApply = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DamageToApply = FMath::Min(Health, DamageToApply);
+	Health -= DamageToApply;
+
+	UE_LOG(LogTemp, Warning, TEXT("Health Left: %f"), Health);
+
+	return DamageToApply;
+}
+
+bool AShooterCharacter::IsDead() const
+{
+	return Health <= 0;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - -
+//			PROTECTED FUNCTIONS
+// - - - - - - - - - - - - - - - - - - - - - -
+
+// Called when the game starts or when spawned
+void AShooterCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	Health = MaxHealth;
+
+	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
+	GetMesh()->HideBoneByName(TEXT("weapon_r"), EPhysBodyOp::PBO_None);
+	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
+	Gun->SetOwner(this);
+}
+
+
+// - - - - - - - - - - - - - - - - - - - - - -
+//			PRIVATE FUNCTIONS
+// - - - - - - - - - - - - - - - - - - - - - -
 
 void AShooterCharacter::MoveForward(float AxisValue)
 {
@@ -58,6 +96,11 @@ void AShooterCharacter::LookUpRate(float AxisValue)
 void AShooterCharacter::LookRightRate(float AxisValue)
 {
 	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::Shoot()
+{
+	Gun->PulLTrigger();
 }
 
 /*
