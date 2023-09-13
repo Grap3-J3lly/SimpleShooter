@@ -51,6 +51,11 @@ float AShooterCharacter::TakeDamage(float DamageAmount, struct FDamageEvent cons
 	return DamageToApply;
 }
 
+void AShooterCharacter::Shoot()
+{
+	Gun->PulLTrigger();
+}
+
 bool AShooterCharacter::IsDead() const
 {
 	return Health <= 0;
@@ -96,11 +101,6 @@ void AShooterCharacter::LookUpRate(float AxisValue)
 void AShooterCharacter::LookRightRate(float AxisValue)
 {
 	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
-}
-
-void AShooterCharacter::Shoot()
-{
-	Gun->PulLTrigger();
 }
 
 /*
