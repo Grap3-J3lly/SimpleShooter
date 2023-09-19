@@ -26,20 +26,29 @@ protected:
 
 private:
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent* Root;
+		USceneComponent* Root;
 
 	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* Mesh;
+		USkeletalMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* MuzzleFlash;
+		UParticleSystem* MuzzleFlash;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* ImpactEffect;
+		USoundBase* MuzzleSound;
 
 	UPROPERTY(EditAnywhere)
-	float MaxRange = 1000;
+		UParticleSystem* ImpactEffect;
 
 	UPROPERTY(EditAnywhere)
-	float Damage = 10;
+		USoundBase* ImpactSound;
+
+	UPROPERTY(EditAnywhere)
+		float MaxRange = 1000;
+
+	UPROPERTY(EditAnywhere)
+		float Damage = 10;
+
+	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
+	AController* GetOwnerController() const;
 };

@@ -5,13 +5,16 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ShooterCharacter.h"
 // - - - - - - - - - - - - - - - - - - - - - -
 //			PUBLIC FUNCTIONS
 // - - - - - - - - - - - - - - - - - - - - - -
 void AShooterAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	// Added all of this to Blackboard / Behavior Tree logic
+	/*APawn* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	
 	if (LineOfSightTo(PlayerPawn))
 	{
@@ -21,7 +24,18 @@ void AShooterAIController::Tick(float DeltaSeconds)
 	else
 	{
 		GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+	}*/
+}
+
+bool AShooterAIController::IsDead() const
+{
+	AShooterCharacter* ControlledCharacter = Cast<AShooterCharacter>(GetPawn());
+	if (ControlledCharacter != nullptr)
+	{
+		return ControlledCharacter->IsDead();
 	}
+
+	return true;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - -
